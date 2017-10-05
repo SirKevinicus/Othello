@@ -2,11 +2,17 @@ package othello;
 
 public class Disc {
 
-	public Boolean isActive;
-	public Integer discColor = 0;
-	public int rCoor;
-	public int cCoor;
+	public Boolean isActive;		//Is there a Disc here?
+	public Integer discColor = 0;	//Colors: 0=null, 1=white, 2=black
+	public int rCoor;	//Row coord of this disc
+	public int cCoor;	//Col coord of this disc
 
+	/**
+	 * CONSTRUCTOR
+	 * @param r
+	 * @param c
+	 * @param dt
+	 */
 	public Disc(int r, int c, String dt) {
 		//dt: color of this disc, as a string
 		rCoor = r;
@@ -24,6 +30,11 @@ public class Disc {
 		}
 	}
 
+	/**
+	 * CONSTRUCTOR
+	 * @param r
+	 * @param c
+	 */
 	public Disc(int r, int c) {
 		rCoor = r;
 		cCoor = c;

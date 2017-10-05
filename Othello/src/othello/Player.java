@@ -8,19 +8,17 @@ public class Player {
 
 	// REFERENCES
 	Scanner sc = new Scanner(System.in);
-	Board b;
 	OthelloConstants con;
+	String color;
+	Board board;
 
 	// VARIABLES
 	Boolean blackTurn = true;
-	private Boolean moveIsValid = true;
-	private int gWidth = OthelloConstants.ARRAY_W;
-	private int gHeight = OthelloConstants.ARRAY_H;
 	private ArrayList<int[]> vms = new ArrayList<int[]>();
-
+	
 	// CONSTRUCTOR
-	public Player(Board d) {
-		b = d;
+	public Player(Board bo) {
+		board = bo;
 	}
 
 	/**
@@ -31,19 +29,26 @@ public class Player {
 	 * @since 9/1/2017
 	 */
 	public void takeTurn() {
-		getValidMoves();
+		resetValidMoves();
+		board.generateValidMoves();
+		if (!hasValidMove())
+			return;
 		printValidMoves();
 		printWhosTurn();
 		String coords = getUserCoords();
+		
+		//If not a special command
+		if (fitsCoordsPattern(coords)) {
+			// Extracts Coordinates from the coords string
+			int rCoor = getRCoor(coords);
+			int cCoor = getCCoor(coords);
 
-		// Extracts Coordinates from the coords string
-		int rCoor = getRCoor(coords);
-		int cCoor = getCCoor(coords);
-
-		// Set Disc color to new color
-		flipPieces(rCoor,cCoor);
-		b.updateGrid(rCoor, cCoor, getMyColor());
-		changeTurn();
+			// Flips all discs
+			board.flipPieces(rCoor, cCoor);
+			//Adds the new piece and updates the board
+			board.updateBoard(rCoor, cCoor, getMyColor());
+			changeTurn();
+		}
 	}
 
 	/**
@@ -80,17 +85,16 @@ public class Player {
 			else
 				blackTurn = true;
 		} else if (coords.equals("score")) {
-			printScore();
+			board.printScore();
 		} else {
 			// Makes sure input length is 3, fits pattern [1-8],[1-8], and the space is
 			// empty
 			while ((coords.length() != 3) || !fitsCoordsPattern(coords)
 					|| checkIfActive(getRCoor(coords), getCCoor(coords))
-					|| !isValidMove2(getRCoor(coords), getCCoor(coords))) {
+					|| !isValidMove(getRCoor(coords), getCCoor(coords))) {
 				System.out.println("Please enter a valid coordinate.");
 				coords = sc.next();
 			}
-			;
 		}
 		return coords;
 	}
@@ -102,7 +106,7 @@ public class Player {
 	 * @return true or false
 	 */
 	public Boolean checkIfActive(int r, int c) {
-		Boolean thingIsActive = b.myDiscs[r][c].isActive;
+		Boolean thingIsActive = board.myDiscs[r][c].isActive;
 		if (thingIsActive) {
 			System.err.println("There's already a disc there!");
 			return true;
@@ -125,204 +129,6 @@ public class Player {
 			return false;
 		}
 	}
-
-	public void getValidMoves() {
-		for (int r = 0; r < b.myDiscs[0].length; r++) {
-			for (int c = 0; c < b.myDiscs[1].length; c++) {
-				if (r != 0)
-					isDirectionValid(r, c, "up");
-				if (r != gHeight - 1)
-					isDirectionValid(r, c, "down");
-				if (c != 0)
-					isDirectionValid(r, c, "left");
-				if (c != gWidth - 1)
-					isDirectionValid(r, c, "right");
-				if (r != 0 && c != 0)
-					isDirectionValid(r, c, "upL");
-				if (r != 0 && c != gWidth - 1)
-					isDirectionValid(r, c, "upR");
-				if (r != gHeight - 1 && c != 0)
-					isDirectionValid(r, c, "downL");
-				if (r != gHeight - 1 && c != gWidth - 1)
-					isDirectionValid(r, c, "downR");
-			}
-		}
-	}
-
-	public void flipPieces(int r, int c) {
-		if (r != 0)
-			if (isDirectionValid(r, c, "up"))
-				flip(r, c, "up");
-		if (r != gHeight - 1)
-			if (isDirectionValid(r, c, "down"))
-				flip(r,c,"down");
-		if (c != 0)
-			if (isDirectionValid(r, c, "left"))
-				flip(r,c,"left");
-		if (c != gWidth - 1) {
-			if (isDirectionValid(r, c, "right")) {
-				flip(r,c,"right");}}
-		if (r != 0 && c != 0)
-			if (isDirectionValid(r, c, "upL"))
-				flip(r,c,"upL");
-		if (r != 0 && c != gWidth - 1)
-			if (isDirectionValid(r, c, "upR"))
-				flip(r,c,"upR");
-		if (r != gHeight - 1 && c != 0)
-			if (isDirectionValid(r, c, "downL"))
-				flip(r,c,"downL");
-		if (r != gHeight - 1 && c != gWidth - 1)
-			if (isDirectionValid(r, c, "downR"))
-				flip(r,c,"downR");
-	}
-
-	public void flip(int r, int c, String d) {
-		int modR = 0; // The Row Modifier, such as -1 for up
-		int modC = 0; // The col modifier, such as 1 for right
-		//int[] vc = new int[2]; // The coordinates of the valid move
-		// Depending on the inputted direction, change the row and col modifiers
-		switch (d) {
-		case "up":
-			modR = -1;
-			break;
-		case "down":
-			modR = 1;
-			break;
-		case "left":
-			modC = -1;
-			break;
-		case "right":
-			modC = 1;
-			break;
-		case "upL":
-			modR = -1;
-			modC = -1;
-			break;
-		case "upR":
-			modR = -1;
-			modC = 1;
-			break;
-		case "downL":
-			modR = 1;
-			modC = -1;
-			break;
-		case "downR":
-			modR = 1;
-			modC = 1;
-			break;
-		default:
-			System.err.println("Invalid direction!");
-		}
-
-		// This is the actual check
-		// If the immediate disc is an enemy, perform the check
-		if (b.myDiscs[r + modR][c + modC].discColor == getEnemyColor()) {
-			b.flipPiece(r + modR, c + modC, getMyColor());
-			// Continue in the direction until a non-enemy disc is found
-			while (b.myDiscs[r + modR][c + modC].discColor == getEnemyColor()) {
-				if (modR < 0) // go left if checking left
-					modR--;
-				else if (modR > 0) // go right if checking right
-					modR++;
-				if (modC < 0) // go up if checking up
-					modC--;
-				else if (modC > 0) // go down if checking down
-					modC++;
-				b.flipPiece(r + modR, c + modC, getMyColor());
-			}
-		}
-	}
-
-	public Boolean isDirectionValid(int r, int c, String d) {
-		int modR = 0; // The Row Modifier, such as -1 for up
-		int modC = 0; // The col modifier, such as 1 for right
-		int[] vc = new int[2]; // The coordinates of the valid move
-		// Depending on the inputted direction, change the row and col modifiers
-		switch (d) {
-		case "up":
-			modR = -1;
-			break;
-		case "down":
-			modR = 1;
-			break;
-		case "left":
-			modC = -1;
-			break;
-		case "right":
-			modC = 1;
-			break;
-		case "upL":
-			modR = -1;
-			modC = -1;
-			break;
-		case "upR":
-			modR = -1;
-			modC = 1;
-			break;
-		case "downL":
-			modR = 1;
-			modC = -1;
-			break;
-		case "downR":
-			modR = 1;
-			modC = 1;
-			break;
-		default:
-			System.err.println("Invalid direction!");
-		}
-
-		// This is the actual check
-		// If the immediate disc is an enemy, perform the check
-		if (b.myDiscs[r + modR][c + modC].discColor == getEnemyColor()) {
-			// Continue in the direction until a non-enemy disc is found
-			while (b.myDiscs[r + modR][c + modC].discColor == getEnemyColor()) {
-				if (modR < 0) // go left if checking left
-					modR--;
-				else if (modR > 0) // go right if checking right
-					modR++;
-				if (modC < 0) // go up if checking up
-					modC--;
-				else if (modC > 0) // go down if checking down
-					modC++;
-			}
-			// If the non-enemy disc exists, that means it's yours and the move is valid
-			if (b.myDiscs[r + modR][c + modC].isActive) {
-				vc[0] = (r);
-				vc[1] = (c);
-				vms.add(vc); // add the coordinate to valid moves
-				return true;
-			}
-			// If not, move is invalid
-			else
-				return false;
-		} else
-			return false;
-	}
-
-	public Boolean isValidMove2(int r, int c) {
-		for (int[] a : vms) {
-			if (a[0] == r && a[1] == c) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Prints the score to the console
-	 * 
-	 * @author sirkevinicus
-	 * @since 9/13/2017
-	 */
-	public void printScore() {
-		System.out.printf("SCORE: \n Black: %d \n White: %d \n", b.blackPieces, b.whitePieces);
-	}
-
-	/*
-	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-	 * GETTERS
-	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	 */
 
 	/**
 	 * Returns the Row Coordinate from the input string
@@ -370,7 +176,57 @@ public class Player {
 
 	public void printValidMoves() {
 		for (int[] b : vms) {
-			System.out.print("(" + b[0] + "," + b[1] + ")\n");
+			System.out.print("(" + (b[0]+1) + "," + (b[1]+1) + ")\n");
 		}
+	}
+	
+	/**
+	 * Adds a new valid move
+	 * @param i
+	 */
+	public void addValidMove(int[] i) {
+		int r = i[0];
+		int c = i[1];
+		for(int[] a: vms) {
+			if(a[0] == r && a[1] == c) {
+				return;
+			}
+		}
+		vms.add(i);
+	}
+	
+	/**
+	 * Resets the Valid Moves
+	 * @author sirkevinicus
+	 */
+	public void resetValidMoves() {
+		vms.clear();
+	}
+	
+	/**
+	 * If the player has a valid move, returns true
+	 * @author sirkevinicus
+	 * @return
+	 */
+	public Boolean hasValidMove() {
+		if (vms.size() != 0)
+			return true;		
+		else
+			return false;
+	}
+	
+	/**
+	 * If the coordinate is valid, returns true
+	 * @param r
+	 * @param c
+	 * @return true or false
+	 */
+	public Boolean isValidMove(int r, int c) {
+		for (int[] a : vms) {
+			if (a[0] == r && a[1] == c) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
