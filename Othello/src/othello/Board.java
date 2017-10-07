@@ -3,7 +3,9 @@ package othello;
 public class Board {
 	// REFERENCES
 	Disc[][] myDiscs;
+	Game game;
 	Player p1;
+	Player p2;
 
 	// BOARD VARIABLES
 	private int bWidth = OthelloConstants.ARRAY_W;
@@ -13,15 +15,11 @@ public class Board {
 	int whitePieces = 2;
 	int blackPieces = 2;
 
-	public Board() {
-		p1 = new Player(this);
+	public Board(Game g, Player one, Player two) {
+		game = g;
+		p1 = one;
+		p2 = two;
 		myDiscs = new Disc[bWidth][bHeight];
-	}
-
-	public void startTurn() {
-		do {
-			p1.takeTurn();
-		} while (p1.hasValidMove());
 	}
 
 	/**
@@ -201,21 +199,6 @@ public class Board {
 	}
 
 	/**
-	 * Checks if the Grid has no more empty spaces.
-	 * 
-	 * @return true or false
-	 */
-	public Boolean checkIfBoardFull() {
-		for (int r = 0; r < bHeight; r++) {
-			for (int c = 0; c < bWidth; c++) {
-				if (!myDiscs[r][c].isActive)
-					return false;
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * Flips the Disc at [r][c] to the opposite color
 	 * 
 	 * @param r
@@ -223,38 +206,6 @@ public class Board {
 	 */
 	public void flipPiece(int r, int c, int myColor) {
 		myDiscs[r][c].changeColor(myColor);
-	}
-
-	/**
-	 * Checks if there are only white discs left
-	 * 
-	 * @return true or false
-	 */
-	public Boolean checkIfWhiteOnly() {
-		for (int r = 0; r < bHeight; r++) {
-			for (int c = 0; c < bWidth; c++) {
-				if (myDiscs[r][c].discColor == 2) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Checks if there are only black discs left
-	 * 
-	 * @return true or false
-	 */
-	public Boolean checkIfBlackOnly() {
-		for (int r = 0; r < bHeight; r++) {
-			for (int c = 0; c < bWidth; c++) {
-				if (myDiscs[r][c].discColor == 1) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	/**
@@ -318,16 +269,6 @@ public class Board {
 		for (int i = 0; i < bWidth; i++) {
 			System.out.printf("  %d   ", i + 1);
 		}
-	}
-
-	/**
-	 * Prints the score to the console
-	 * 
-	 * @author sirkevinicus
-	 * @since 9/13/2017
-	 */
-	public void printScore() {
-		System.out.printf("SCORE: \n Black: %d \n White: %d \n", blackPieces, whitePieces);
 	}
 
 	public int[] getModifiers(String d) {

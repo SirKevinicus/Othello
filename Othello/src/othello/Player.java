@@ -4,51 +4,23 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class Player {
+public class Player{
 
 	// REFERENCES
 	Scanner sc = new Scanner(System.in);
 	OthelloConstants con;
 	String color;
-	Board board;
-
+	Game game;
+	Boolean isHuman;
+	
 	// VARIABLES
 	Boolean blackTurn = true;
 	private ArrayList<int[]> vms = new ArrayList<int[]>();
 	
 	// CONSTRUCTOR
-	public Player(Board bo) {
-		board = bo;
-	}
-
-	/**
-	 * Tells the user who's turn it is, asks for coordinates for their next piece
-	 * Checks to make sure the input is valid Updates the Grid and prints it out
-	 * 
-	 * @author sirkevinicus
-	 * @since 9/1/2017
-	 */
-	public void takeTurn() {
-		resetValidMoves();
-		board.generateValidMoves();
-		if (!hasValidMove())
-			return;
-		printValidMoves();
-		printWhosTurn();
-		String coords = getUserCoords();
-		
-		//If not a special command
-		if (fitsCoordsPattern(coords)) {
-			// Extracts Coordinates from the coords string
-			int rCoor = getRCoor(coords);
-			int cCoor = getCCoor(coords);
-
-			// Flips all discs
-			board.flipPieces(rCoor, cCoor);
-			//Adds the new piece and updates the board
-			board.updateBoard(rCoor, cCoor, getMyColor());
-			changeTurn();
-		}
+	public Player(Game g, Boolean h) {
+		game = g;
+		isHuman = h;
 	}
 
 	/**
@@ -85,34 +57,20 @@ public class Player {
 			else
 				blackTurn = true;
 		} else if (coords.equals("score")) {
-			board.printScore();
-		} else {
+			game.printScore();
+		} else if (coords.equals("help")) {
+			printValidMoves();
+		}
+		else {
 			// Makes sure input length is 3, fits pattern [1-8],[1-8], and the space is
 			// empty
 			while ((coords.length() != 3) || !fitsCoordsPattern(coords)
-					|| checkIfActive(getRCoor(coords), getCCoor(coords))
 					|| !isValidMove(getRCoor(coords), getCCoor(coords))) {
 				System.out.println("Please enter a valid coordinate.");
 				coords = sc.next();
 			}
 		}
 		return coords;
-	}
-
-	/**
-	 * Checks to see if the Disc at [r][c] is active
-	 * 
-	 * @param s
-	 * @return true or false
-	 */
-	public Boolean checkIfActive(int r, int c) {
-		Boolean thingIsActive = board.myDiscs[r][c].isActive;
-		if (thingIsActive) {
-			System.err.println("There's already a disc there!");
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	/**
@@ -175,6 +133,7 @@ public class Player {
 	}
 
 	public void printValidMoves() {
+		System.out.println("Valid Moves: ");
 		for (int[] b : vms) {
 			System.out.print("(" + (b[0]+1) + "," + (b[1]+1) + ")\n");
 		}

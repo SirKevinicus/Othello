@@ -76,7 +76,7 @@ public class Disc {
 	/**
 	 * Returns the Row Coordinate of this disc
 	 * @return rCoor
-	 * @author Kevin Gerstner
+	 * @author sirkevinicus
 	 * @since 9/1/2017
 	 */
 	public int getRCoor() {
@@ -86,7 +86,7 @@ public class Disc {
 	/**
 	 * Returns the Col Coordinate of this disc
 	 * @return cCoor
-	 * @author Kevin Gerstner
+	 * @author sirkevinicus
 	 * since 9/1/2017
 	 */
 	public int getCCoor() {
