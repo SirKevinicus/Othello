@@ -4,44 +4,82 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class Player{
+public class Player {
 
 	// REFERENCES
-	Scanner sc = new Scanner(System.in);
-	OthelloConstants con;
+	OthelloConstants con = new OthelloConstants();
 	String color;
 	Game game;
-	Boolean isHuman;
-	
-	// VARIABLES
-	Boolean blackTurn = true;
-	private ArrayList<int[]> vms = new ArrayList<int[]>();
-	
+	Scanner sc = new Scanner(System.in);
+
+	// VARS
+	ArrayList<int[]> vms = new ArrayList<int[]>(); // List of valid moves
+
 	// CONSTRUCTOR
-	public Player(Game g, Boolean h) {
+	public Player(Game g) {
 		game = g;
-		isHuman = h;
 	}
 
-	/**
-	 * Prints who's turn it is
-	 */
-	public void printWhosTurn() {// Print Statement
-		if (getMyColor() == 1) {
-			System.out.println("It's WHITE'S turn! Place your next disc.");
-		} else {
-			System.out.println("It's BLACK'S turn! Place your next disc.");
+	public void printValidMoves() {
+		System.out.println("Valid Moves: ");
+		for (int[] b : vms) {
+			System.out.print("(" + (b[0] + 1) + "," + (b[1] + 1) + ")\n");
 		}
 	}
 
 	/**
-	 * Advances the game to the next player's turn
+	 * Adds a new valid move
+	 * 
+	 * @param i
 	 */
-	public void changeTurn() {
-		if (blackTurn)
-			blackTurn = false;
+	public void addValidMove(int r, int c) {
+		int[] vc = new int[2];
+		for (int[] a : vms) {
+			if (a[0] == r && a[1] == c) {
+				return;
+			}
+		}
+		vc[0] = r;
+		vc[1] = c;
+		vms.add(vc);
+	}
+
+	/**
+	 * Resets the Valid Moves
+	 * 
+	 * @author sirkevinicus
+	 */
+	public void resetValidMoves() {
+		vms.clear();
+	}
+
+	/**
+	 * If the player has a valid move, returns true
+	 * 
+	 * @author sirkevinicus
+	 * @return
+	 */
+	public Boolean hasValidMove() {
+		if (vms.size() != 0)
+			return true;
 		else
-			blackTurn = true;
+			return false;
+	}
+
+	/**
+	 * If the coordinate is valid, returns true
+	 * 
+	 * @param r
+	 * @param c
+	 * @return true or false
+	 */
+	public Boolean isValidMove(int r, int c) {
+		for (int[] a : vms) {
+			if (a[0] == r && a[1] == c) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -52,16 +90,15 @@ public class Player{
 	public String getUserCoords() {
 		String coords = sc.next();
 		if (coords.equals("pass")) {
-			if (blackTurn)
-				blackTurn = false;
+			if (game.isBlackTurn())
+				game.setBlackTurn(false);
 			else
-				blackTurn = true;
+				game.setBlackTurn(true);
 		} else if (coords.equals("score")) {
 			game.printScore();
 		} else if (coords.equals("help")) {
 			printValidMoves();
-		}
-		else {
+		} else {
 			// Makes sure input length is 3, fits pattern [1-8],[1-8], and the space is
 			// empty
 			while ((coords.length() != 3) || !fitsCoordsPattern(coords)
@@ -91,7 +128,7 @@ public class Player{
 	/**
 	 * Returns the Row Coordinate from the input string
 	 * 
-	 * @param s
+	 * @param strin
 	 * @return row coor
 	 */
 	public int getRCoor(String s) {
@@ -101,7 +138,7 @@ public class Player{
 	/**
 	 * Returns the Col Coordinate from the input string
 	 * 
-	 * @param s
+	 * @param string
 	 * @return col coor
 	 */
 	public int getCCoor(String s) {
@@ -109,83 +146,13 @@ public class Player{
 	}
 
 	/**
-	 * Returns the inactive player's color
+	 * Return a random move out of the valid moves
 	 * 
-	 * @return 1(white) or 2(black)
-	 */
-	public int getEnemyColor() {
-		if (blackTurn)
-			return 1;
-		else
-			return 2;
-	}
-
-	/**
-	 * Returns the active player's color
-	 * 
-	 * @return 1(white) or 2(black)
-	 */
-	public int getMyColor() {
-		if (blackTurn)
-			return 2;
-		else
-			return 1;
-	}
-
-	public void printValidMoves() {
-		System.out.println("Valid Moves: ");
-		for (int[] b : vms) {
-			System.out.print("(" + (b[0]+1) + "," + (b[1]+1) + ")\n");
-		}
-	}
-	
-	/**
-	 * Adds a new valid move
-	 * @param i
-	 */
-	public void addValidMove(int[] i) {
-		int r = i[0];
-		int c = i[1];
-		for(int[] a: vms) {
-			if(a[0] == r && a[1] == c) {
-				return;
-			}
-		}
-		vms.add(i);
-	}
-	
-	/**
-	 * Resets the Valid Moves
 	 * @author sirkevinicus
+	 * @return random move
 	 */
-	public void resetValidMoves() {
-		vms.clear();
-	}
-	
-	/**
-	 * If the player has a valid move, returns true
-	 * @author sirkevinicus
-	 * @return
-	 */
-	public Boolean hasValidMove() {
-		if (vms.size() != 0)
-			return true;		
-		else
-			return false;
-	}
-	
-	/**
-	 * If the coordinate is valid, returns true
-	 * @param r
-	 * @param c
-	 * @return true or false
-	 */
-	public Boolean isValidMove(int r, int c) {
-		for (int[] a : vms) {
-			if (a[0] == r && a[1] == c) {
-				return true;
-			}
-		}
-		return false;
+	public String getRandomMove() {
+		int[] randomCoord = vms.get((int) (Math.random() * vms.size()));
+		return (randomCoord[0]+1) + "," + (randomCoord[1]+1);
 	}
 }

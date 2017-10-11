@@ -3,9 +3,9 @@ package othello;
 public class Board {
 	// REFERENCES
 	Disc[][] myDiscs;
+	OthelloConstants con = new OthelloConstants();
 	Game game;
 	Player p1;
-	Player p2;
 
 	// BOARD VARIABLES
 	private int bWidth = OthelloConstants.ARRAY_W;
@@ -15,13 +15,12 @@ public class Board {
 	int whitePieces = 2;
 	int blackPieces = 2;
 
-	public Board(Game g, Player one, Player two) {
-		game = g;
+	public Board(Game g, Player one) {
 		p1 = one;
-		p2 = two;
+		game = g;
 		myDiscs = new Disc[bWidth][bHeight];
 	}
-
+	
 	/**
 	 * Creates a Disc for each space in the grid Places the first 4 discs in the
 	 * middle
@@ -52,6 +51,7 @@ public class Board {
 	 * @since 9/1/2017
 	 */
 	public void printBoard() {
+		con.printDiv();
 		printNums();
 		printLineDivider();
 		// PRINT ALL THE ROWS
@@ -59,6 +59,7 @@ public class Board {
 			printRow(row);
 			printLineDivider();
 		}
+		con.printDiv();
 	}
 
 	/**
@@ -72,11 +73,10 @@ public class Board {
 	 */
 	public void updateBoard(int r, int c, int color) {
 		myDiscs[r][c].changeColor(color);
-		if(p1.getMyColor() == 2)
+		if(game.isBlackTurn())
 			blackPieces++;
 		else
 			whitePieces++;
-		printBoard();
 	}
 
 	public void generateValidMoves() {
@@ -135,13 +135,12 @@ public class Board {
 		int[] mods = getModifiers(d);
 		int modR = mods[0]; // The Row Modifier, such as -1 for up
 		int modC = mods[1]; // The col modifier, such as 1 for right
-		int[] vc = new int[2]; // The coordinates of the valid move
 
 		try {
 			// If the immediate disc is an enemy, perform the check
-			if (myDiscs[r + modR][c + modC].discColor == p1.getEnemyColor()) {
+			if (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
 				// Continue in the direction until a non-enemy disc is found
-				while (myDiscs[r + modR][c + modC].discColor == p1.getEnemyColor()) {
+				while (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
 					if (modR < 0) // go left if checking left
 						modR--;
 					else if (modR > 0) // go right if checking right
@@ -153,9 +152,7 @@ public class Board {
 				}
 				// If the non-enemy disc exists, that means the move is valid
 				if (myDiscs[r + modR][c + modC].isActive) {
-					vc[0] = r;
-					vc[1] = c;
-					p1.addValidMove(vc); // add the coordinate to valid moves
+					p1.addValidMove(r, c);
 					return true;
 				}
 				// If not, move is invalid
@@ -174,15 +171,15 @@ public class Board {
 		int modC = mods[1]; // The col modifier, such as 1 for right
 
 		// If the immediate disc is an enemy, perform the check
-		if (myDiscs[r + modR][c + modC].discColor == p1.getEnemyColor()) {
+		if (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
 			// Continue in the direction until a non-enemy disc is found
-			while (myDiscs[r + modR][c + modC].discColor == p1.getEnemyColor()) {
-				flipPiece(r + modR, c + modC, p1.getMyColor());
-				if (p1.getMyColor() == 1) {
+			while (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
+				flipPiece(r + modR, c + modC, game.getMyColor());
+				if (game.getMyColor() == 1) {
 					whitePieces++;
 					blackPieces--;
 				}
-				if (p1.getMyColor() == 2) {
+				if (game.getMyColor() == 2) {
 					whitePieces--;
 					blackPieces++;
 				}
