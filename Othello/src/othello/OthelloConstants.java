@@ -14,6 +14,7 @@ public class OthelloConstants {
 			+ "| (___) |   | |   | )   ( || (____/\\| (____/\\| (____/\\| (___) |\n"
 			+ "(_______)   )_(   |/     \\|(_______/(_______/(_______/(_______)\n"
 			+ "_________________________________________________________________\n";
+
 	final static String instructions = "Welcome to Othello! \n\nINSTRUCTIONS:"
 			+ "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
 			+ "Please enter the Coordinates, Row First, then Column.\n"
@@ -36,43 +37,103 @@ public class OthelloConstants {
 			+ "   \\      |   _______________________________    |     /\n"
 			+ "   /      |______________________________________|     \\\n"
 			+ "  /__________)                                (_________\\";
-	
+
 	final String itsATie = "           ______________________________________\n"
 			+ "  ________|                                      |_______\n"
 			+ "  \\       |   I  T  S       A      T  I  E  !    |      /\n"
 			+ "   \\      |   ...............................    |     /\n"
 			+ "   /      |______________________________________|     \\\n"
 			+ "  /__________)                                (_________\\";
-	
-	final String divider = " _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _\n" + 
-			"( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )\n" + 
-			"-O--T--H--E--L--L--O--X--O--T--H--E--L--L--O--X--O--T--H--E--L--L--O--X-\n" + 
-			"(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)\n";
 
+	final String divider = " _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _\n"
+			+ "( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )\n"
+			+ "-O--T--H--E--L--L--O--X--O--T--H--E--L--L--O--X--O--T--H--E--L--L--O--X-\n"
+			+ "(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)\n";
+	
+	final String goodbye = "   ______                ____               __\n" + 
+			"  / ____/___  ____  ____/ / /_  __  _____  / /\n" + 
+			" / / __/ __ \\/ __ \\/ __  / __ \\/ / / / _ \\/ / \n" + 
+			"/ /_/ / /_/ / /_/ / /_/ / /_/ / /_/ /  __/_/  \n" + 
+			"\\____/\\____/\\____/\\__,_/_.___/\\__, /\\___(_)   \n" + 
+			"                             /____/           ";
+
+	/**
+	 * Prints the Game's instructions
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void printInstructions() {
 		System.out.println(instructions);
 	}
 
+	/**
+	 * Prints the title
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public static void printAsciiName() {
 		System.out.println(asciiName);
 	}
 
+	/**
+	 * Prints the text for Gamemode Selection
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void printGamemodeSelection() {
 		System.out.println(gamemodeSelection);
 	}
 
+	/**
+	 * Prints White Wins!
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void printWhiteWins() {
 		System.out.println(whiteWins);
 	}
 
+	/**
+	 * Prints Black Wins!
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void printBlackWins() {
 		System.out.println(blackWins);
 	}
-	
+
+	/**
+	 * Prints Tie
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void printTie() {
 		System.out.println(itsATie);
 	}
+
+	/**
+	 * Prints a divider
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void printDiv() {
 		System.out.println(divider);
+	}
+	
+	/**
+	 * Prints goodybe
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void printGoodbye() {
+		System.out.println(goodbye);
 	}
 }

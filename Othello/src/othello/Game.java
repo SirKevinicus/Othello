@@ -5,18 +5,33 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Game {
-	// Create references
+	// REFERENCES
 	OthelloConstants con = new OthelloConstants();
-	Board board;
 
-	// Variables
+	// VARIABLES
 	private Boolean blackTurn = true;
 	private Boolean isFirstGame = true;
 	Scanner scan = new Scanner(System.in);
+	Player player = new Player(this);
+	Board board = new Board(this, player);
+	private Boolean p1MovesLeft = true;
+	private Boolean p2MovesLeft = true;
 
+	/**
+	 * Runs the game, depending on which game mode was selected.
+	 * 
+	 * @param gametype
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void run(String gametype) {
 		// Print the game and start taking turns until the game is over
 		con.printDiv();
+		board.setBlackPieces(2);
+		board.setWhitePieces(2);
+		blackTurn = true;
+
+		// Print the instructions if this is the first game
 		if (isFirstGame) {
 			con.printInstructions();
 			pressEnterToContinue();
@@ -36,109 +51,159 @@ public class Game {
 		}
 	}
 
+	/**
+	 * Runs the 1P vs. CPU game
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void run1PGame() {
-		Player p1 = new Player(this);
-		board = new Board(this, p1);
 		board.initBoard();
 		board.printBoard();
 		board.generateValidMoves();
 		String coords;
 
-		while (p1.hasValidMove()) {
-			p1.resetValidMoves();
+		while (p1MovesLeft || p2MovesLeft) {
+			player.resetValidMoves();
 			board.generateValidMoves();
-			if (p1.hasValidMove()) {
+			if (player.hasValidMove()) {
+				p1MovesLeft = true;
+				p2MovesLeft = true;
 				printWhosTurn();
 				if (blackTurn) {
-					coords = p1.getUserCoords();
+					coords = player.getUserCoords();
 				} else {
-					coords = p1.getRandomMove();
+					coords = player.getRandomMove();
 				}
 				// If not a special command
-				if (p1.fitsCoordsPattern(coords)) {
+				if (player.fitsCoordsPattern(coords)) {
 					// Extracts Coordinates from the coords string
-					int rCoor = p1.getRCoor(coords);
-					int cCoor = p1.getCCoor(coords);
+					int rCoor = player.getRCoor(coords);
+					int cCoor = player.getCCoor(coords);
 
 					// Flips all discs
 					board.flipPieces(rCoor, cCoor);
 
 					// Adds the new piece and updates the board
-					board.updateBoard(rCoor, cCoor, getMyColor());
+					board.addDisc(rCoor, cCoor, getMyColor());
 					board.printBoard();
 					changeTurn();
 				}
+			} else {
+				if (p1MovesLeft && p2MovesLeft) {
+					p1MovesLeft = false;
+					pass();
+				} else if (!p1MovesLeft && p2MovesLeft)
+					p2MovesLeft = false;
 			}
 		}
 		printResults();
 	}
 
+	/**
+	 * Runs the P vs. P game mode
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void run2PGame() {
+		board.initBoard();
+		board.printBoard();
+		board.generateValidMoves();
+		String coords;
+
+		while (p1MovesLeft || p2MovesLeft) {
+			player.resetValidMoves();
+			board.generateValidMoves();
+			if (player.hasValidMove()) {
+				p1MovesLeft = true;
+				p2MovesLeft = true;
+				printWhosTurn();
+				coords = player.getUserCoords();
+
+				// If not a special command
+				if (player.fitsCoordsPattern(coords)) {
+					// Extracts Coordinates from the coords string
+					int rCoor = player.getRCoor(coords);
+					int cCoor = player.getCCoor(coords);
+
+					// Flips all discs
+					board.flipPieces(rCoor, cCoor);
+
+					// Adds the new piece and updates the board
+					board.addDisc(rCoor, cCoor, getMyColor());
+					board.printBoard();
+					changeTurn();
+				}
+			} else {
+				if (p1MovesLeft && p2MovesLeft) {
+					p1MovesLeft = false;
+					pass();
+				} else if (!p1MovesLeft && p2MovesLeft)
+					p2MovesLeft = false;
+			}
+		}
+		printResults();
+	}
+
+	/**
+	 * Runs the simulation game mode
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void runSim() {
 		System.out.println("How many times would you like to run the simulation?");
 		int numTimes = scan.nextInt();
 		int[] spreadArray = new int[numTimes];
 		for (int i = 1; i < numTimes; i++) {
-			System.out.println("Running test #" + (i+1) + ".") ;
-			Player p1 = new Player(this);
-			board = new Board(this, p1);
+			System.out.println("Running test #" + (i + 1) + ".");
 			board.initBoard();
 			board.generateValidMoves();
 			String coords;
 
-			while (p1.hasValidMove()) {
-				p1.resetValidMoves();
+			while (p1MovesLeft || p2MovesLeft) {
+				player.resetValidMoves();
 				board.generateValidMoves();
-				if (p1.hasValidMove()) {
-					coords = p1.getRandomMove();
+				if (player.hasValidMove()) {
+					p1MovesLeft = true;
+					p2MovesLeft = true;
+
+					coords = player.getRandomMove();
 					// Extracts Coordinates from the coords string
-					int rCoor = p1.getRCoor(coords);
-					int cCoor = p1.getCCoor(coords);
+					int rCoor = player.getRCoor(coords);
+					int cCoor = player.getCCoor(coords);
 
 					// Flips all discs
 					board.flipPieces(rCoor, cCoor);
 
 					// Adds the new piece and updates the board
-					board.updateBoard(rCoor, cCoor, getMyColor());
+					board.addDisc(rCoor, cCoor, getMyColor());
 					changeTurn();
+				} else {
+					if (p1MovesLeft && p2MovesLeft) {
+						p1MovesLeft = false;
+						pass();
+					} else if (!p1MovesLeft && p2MovesLeft)
+						p2MovesLeft = false;
 				}
 			}
-			spreadArray[i] = board.blackPieces - board.whitePieces;
+			spreadArray[i] = board.getBlackPieces() - board.getWhitePieces();
 		}
 		printSpread(spreadArray);
 	}
 
-	public void run2PGame() {
-		Player p1 = new Player(this);
-		board = new Board(this, p1);
-		board.initBoard();
-		board.printBoard();
-		board.generateValidMoves();
-		String coords;
-
-		while (p1.hasValidMove()) {
-			p1.resetValidMoves();
-			board.generateValidMoves();
-			if (p1.hasValidMove()) {
-				printWhosTurn();
-				coords = p1.getUserCoords();
-
-				// If not a special command
-				if (p1.fitsCoordsPattern(coords)) {
-					// Extracts Coordinates from the coords string
-					int rCoor = p1.getRCoor(coords);
-					int cCoor = p1.getCCoor(coords);
-
-					// Flips all discs
-					board.flipPieces(rCoor, cCoor);
-
-					// Adds the new piece and updates the board
-					board.updateBoard(rCoor, cCoor, getMyColor());
-					board.printBoard();
-					changeTurn();
-				}
-			}
-		}
-		printResults();
+	/**
+	 * Advances the game to the next player's turn
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void pass() {
+		if (isBlackTurn())
+			setBlackTurn(false);
+		else
+			setBlackTurn(true);
 	}
 
 	/**
@@ -163,9 +228,16 @@ public class Game {
 	 * @since 9/13/2017
 	 */
 	public void printScore() {
-		System.out.printf("SCORE: \n Black: %d \n White: %d \n", board.blackPieces, board.whitePieces);
+		System.out.printf("SCORE: \n Black: %d \n White: %d \n", board.getBlackPieces(), board.getWhitePieces());
 	}
 
+	/**
+	 * Asks the player what kind of game they want to play
+	 * 
+	 * @return returns 1P, 2P, or SIM
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public String askForGametype() {
 		con.printGamemodeSelection();
 		String input = scan.next();
@@ -229,30 +301,85 @@ public class Game {
 	 * @since 10/11/2017
 	 */
 	public void printResults() {
+		int wp = board.getWhitePieces();
+		int bp = board.getBlackPieces();
 		// Check if anyone won the game
-		if (board.whitePieces > board.blackPieces) {
+		if (wp > bp) {
 			con.printWhiteWins();
-			System.out.printf("\nScore: \n White: %3d \n Black: %3d", board.whitePieces, board.blackPieces);
-		} else if (board.whitePieces < board.blackPieces) {
+			System.out.printf("\nScore: \n White: %3d \n Black: %3d", wp, bp);
+		} else if (wp < bp) {
 			con.printBlackWins();
-			System.out.printf("\nScore: \n Black: %3d \n White: %3d", board.blackPieces, board.whitePieces);
+			System.out.printf("\nScore: \n Black: %3d \n White: %3d", bp, wp);
 		} else {
 			con.printTie();
-			System.out.printf("\nScore: \n Black: %3d \n White: %3d", board.blackPieces, board.whitePieces);
+			System.out.printf("\nScore: \n Black: %3d \n White: %3d", bp, wp);
 		}
 	}
-	
+
+	/**
+	 * Prints the spread values to a file
+	 * 
+	 * @param array
+	 *            of spreads
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void printSpread(int[] a) {
 		try {
 			PrintWriter writer = new PrintWriter("simresults.txt", "UTF-8");
-			for(int i: a)
-				writer.print(i + ",");
+			for (int i : a)
+				writer.println(i + ";");
 			writer.close();
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
+	/**
+	 * Quits the game
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void quit() {
+		if (playAgain()) {
+			run(askForGametype());
+		} else {
+			System.err.print("Exiting game.");
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.err.print(".");
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.err.print(".\n");
+			con.printGoodbye();
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			for(int i = 0; i < 100; i++) {
+				System.out.println("\b");
+			}
+			System.out.flush();
+		
+			System.exit(0);
+		}
+	}
+
+	/**
+	 * Asks the user if they want to play again
+	 * 
+	 * @return true or false
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public Boolean playAgain() {
 		System.out.println("\nWould you like to play again? Type 'y' for yes and 'n' for no.");
 		String pa = scan.next();
@@ -267,6 +394,13 @@ public class Game {
 			return false;
 	}
 
+	/**
+	 * Returns whether or not it's black's turn
+	 * 
+	 * @return true or false
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public Boolean isBlackTurn() {
 		if (blackTurn)
 			return true;
@@ -274,6 +408,13 @@ public class Game {
 			return false;
 	}
 
+	/**
+	 * Sets the game to black's turn
+	 * 
+	 * @param b
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void setBlackTurn(Boolean b) {
 		blackTurn = b;
 	}

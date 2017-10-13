@@ -20,27 +20,27 @@ public class Player {
 		game = g;
 	}
 
-	public void printValidMoves() {
-		System.out.println("Valid Moves: ");
-		for (int[] b : vms) {
-			System.out.print("(" + (b[0] + 1) + "," + (b[1] + 1) + ")\n");
-		}
-	}
-
 	/**
-	 * Adds a new valid move
+	 * Adds a new valid move for the current player
 	 * 
 	 * @param i
+	 * @author sirkevinicus
+	 * @since 10/11/17
 	 */
 	public void addValidMove(int r, int c) {
-		int[] vc = new int[2];
+		int[] vc = new int[2]; // Creates a new int[] valid coordinate, storing row and col
+
+		// If the coordinate is already valid, doesn't add it again
 		for (int[] a : vms) {
 			if (a[0] == r && a[1] == c) {
 				return;
 			}
 		}
+		// Adds the row and col to the valid coordinate
 		vc[0] = r;
 		vc[1] = c;
+
+		// Adds the validCoordinate to the list
 		vms.add(vc);
 	}
 
@@ -48,6 +48,7 @@ public class Player {
 	 * Resets the Valid Moves
 	 * 
 	 * @author sirkevinicus
+	 * @since 10/13/17
 	 */
 	public void resetValidMoves() {
 		vms.clear();
@@ -57,7 +58,7 @@ public class Player {
 	 * If the player has a valid move, returns true
 	 * 
 	 * @author sirkevinicus
-	 * @return
+	 * @return Boolean
 	 */
 	public Boolean hasValidMove() {
 		if (vms.size() != 0)
@@ -72,8 +73,11 @@ public class Player {
 	 * @param r
 	 * @param c
 	 * @return true or false
+	 * @author sirkevinicus
+	 * @since 10/13/17
 	 */
 	public Boolean isValidMove(int r, int c) {
+		// Checks to see if the given [r,c] is in the validCoordinates list
 		for (int[] a : vms) {
 			if (a[0] == r && a[1] == c) {
 				return true;
@@ -83,24 +87,39 @@ public class Player {
 	}
 
 	/**
+	 * Prints out all of the current player's valid moves
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/11/17
+	 */
+	public void printValidMoves() {
+		System.out.println("Valid Moves: ");
+		for (int[] b : vms) {
+			System.out.print("(" + (b[0] + 1) + "," + (b[1] + 1) + ")\n");
+		}
+	}
+
+	/**
 	 * Asks the player for coordinates to place their piece
 	 * 
 	 * @return String coords
+	 * @author sirkevinicus
+	 * @since 10/13/17
 	 */
 	public String getUserCoords() {
 		String coords = sc.next();
+
+		// If the input is a special character
 		if (coords.equals("pass")) {
-			if (game.isBlackTurn())
-				game.setBlackTurn(false);
-			else
-				game.setBlackTurn(true);
+			game.pass();
 		} else if (coords.equals("score")) {
 			game.printScore();
 		} else if (coords.equals("help")) {
 			printValidMoves();
+		} else if (coords.equals("quit")) {
+			game.quit();
 		} else {
-			// Makes sure input length is 3, fits pattern [1-8],[1-8], and the space is
-			// empty
+			// Makes sure input length is 3, fits pattern [1-8],[1-8], and the move is valid
 			while ((coords.length() != 3) || !fitsCoordsPattern(coords)
 					|| !isValidMove(getRCoor(coords), getCCoor(coords))) {
 				System.out.println("Please enter a valid coordinate.");
@@ -111,7 +130,7 @@ public class Player {
 	}
 
 	/**
-	 * Checks if the input fits the pattern [1-8],[1,8]
+	 * Checks if the input fits the pattern [1-8],[1-8]
 	 * 
 	 * @param s
 	 * @return true or false
@@ -129,7 +148,7 @@ public class Player {
 	 * Returns the Row Coordinate from the input string
 	 * 
 	 * @param strin
-	 * @return row coor
+	 * @return row coordinate
 	 */
 	public int getRCoor(String s) {
 		return Integer.parseInt(s.substring(0, 1)) - 1;
@@ -139,7 +158,7 @@ public class Player {
 	 * Returns the Col Coordinate from the input string
 	 * 
 	 * @param string
-	 * @return col coor
+	 * @return col coordinate
 	 */
 	public int getCCoor(String s) {
 		return Integer.parseInt(s.substring(2)) - 1;
@@ -153,6 +172,6 @@ public class Player {
 	 */
 	public String getRandomMove() {
 		int[] randomCoord = vms.get((int) (Math.random() * vms.size()));
-		return (randomCoord[0]+1) + "," + (randomCoord[1]+1);
+		return (randomCoord[0] + 1) + "," + (randomCoord[1] + 1);
 	}
 }

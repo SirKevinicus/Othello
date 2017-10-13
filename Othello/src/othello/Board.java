@@ -7,23 +7,21 @@ public class Board {
 	Game game;
 	Player p1;
 
-	// BOARD VARIABLES
+	// VARIABLES
 	private int bWidth = OthelloConstants.ARRAY_W;
 	private int bHeight = OthelloConstants.ARRAY_H;
-	Boolean boardFull = false;
-	Boolean movesLeft = true;
-	int whitePieces = 2;
-	int blackPieces = 2;
+	private int whitePieces = 2;
+	private int blackPieces = 2;
 
 	public Board(Game g, Player one) {
 		p1 = one;
 		game = g;
 		myDiscs = new Disc[bWidth][bHeight];
 	}
-	
+
 	/**
-	 * Creates a Disc for each space in the grid Places the first 4 discs in the
-	 * middle
+	 * Creates a Disc for each space on the board and places the first 4 discs in
+	 * the middle
 	 * 
 	 * @author sirkevinicus
 	 * @since 9/1/2017
@@ -63,7 +61,7 @@ public class Board {
 	}
 
 	/**
-	 * Places a new disc and reprints the Board
+	 * Places a new disc on the board
 	 * 
 	 * @param r
 	 * @param c
@@ -71,66 +69,75 @@ public class Board {
 	 * @author Kevin Gerstner
 	 * @since 9/1/2017
 	 */
-	public void updateBoard(int r, int c, int color) {
+	public void addDisc(int r, int c, int color) {
 		myDiscs[r][c].changeColor(color);
-		if(game.isBlackTurn())
+		if (game.isBlackTurn())
 			blackPieces++;
 		else
 			whitePieces++;
 	}
 
+	/**
+	 * Finds all of the possible moves for the current player
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void generateValidMoves() {
 		for (int r = 0; r < myDiscs[0].length; r++) {
 			for (int c = 0; c < myDiscs[1].length; c++) {
+				// If the disc is not active
 				if (!myDiscs[r][c].isActive) {
-					if (r != 0)
-						isDirectionValid(r, c, "up");
-					if (r != bHeight - 1)
-						isDirectionValid(r, c, "down");
-					if (c != 0)
-						isDirectionValid(r, c, "left");
-					if (c != bWidth - 1)
-						isDirectionValid(r, c, "right");
-					if (r != 0 && c != 0)
-						isDirectionValid(r, c, "upL");
-					if (r != 0 && c != bWidth - 1)
-						isDirectionValid(r, c, "upR");
-					if (r != bHeight - 1 && c != 0)
-						isDirectionValid(r, c, "downL");
-					if (r != bHeight - 1 && c != bWidth - 1)
-						isDirectionValid(r, c, "downR");
+					isDirectionValid(r, c, "up");
+					isDirectionValid(r, c, "down");
+					isDirectionValid(r, c, "left");
+					isDirectionValid(r, c, "right");
+					isDirectionValid(r, c, "upL");
+					isDirectionValid(r, c, "upR");
+					isDirectionValid(r, c, "downL");
+					isDirectionValid(r, c, "downR");
 				}
 			}
 		}
 	}
 
+	/**
+	 * Flips all pieces that are sandwiched
+	 * 
+	 * @param r
+	 * @param c
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void flipPieces(int r, int c) {
-		if (r != 0)
-			if (isDirectionValid(r, c, "up"))
-				flip(r, c, "up");
-		if (r != bHeight - 1)
-			if (isDirectionValid(r, c, "down"))
-				flip(r, c, "down");
-		if (c != 0)
-			if (isDirectionValid(r, c, "left"))
-				flip(r, c, "left");
-		if (c != bWidth - 1)
-			if (isDirectionValid(r, c, "right"))
-				flip(r, c, "right");
-		if (r != 0 && c != 0)
-			if (isDirectionValid(r, c, "upL"))
-				flip(r, c, "upL");
-		if (r != 0 && c != bWidth - 1)
-			if (isDirectionValid(r, c, "upR"))
-				flip(r, c, "upR");
-		if (r != bHeight - 1 && c != 0)
-			if (isDirectionValid(r, c, "downL"))
-				flip(r, c, "downL");
-		if (r != bHeight - 1 && c != bWidth - 1)
-			if (isDirectionValid(r, c, "downR"))
-				flip(r, c, "downR");
+		if (isDirectionValid(r, c, "up"))
+			flip(r, c, "up");
+		if (isDirectionValid(r, c, "down"))
+			flip(r, c, "down");
+		if (isDirectionValid(r, c, "left"))
+			flip(r, c, "left");
+		if (isDirectionValid(r, c, "right"))
+			flip(r, c, "right");
+		if (isDirectionValid(r, c, "upL"))
+			flip(r, c, "upL");
+		if (isDirectionValid(r, c, "upR"))
+			flip(r, c, "upR");
+		if (isDirectionValid(r, c, "downL"))
+			flip(r, c, "downL");
+		if (isDirectionValid(r, c, "downR"))
+			flip(r, c, "downR");
 	}
 
+	/**
+	 * Checks to see if a direction is valid
+	 * 
+	 * @param r
+	 * @param c
+	 * @param d
+	 * @return true or false
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public Boolean isDirectionValid(int r, int c, String d) {
 		int[] mods = getModifiers(d);
 		int modR = mods[0]; // The Row Modifier, such as -1 for up
@@ -165,6 +172,15 @@ public class Board {
 		}
 	}
 
+	/**
+	 * Flips all pieces in a direction
+	 * 
+	 * @param r
+	 * @param c
+	 * @param d
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public void flip(int r, int c, String d) {
 		int[] mods = getModifiers(d);
 		int modR = mods[0]; // The Row Modifier, such as -1 for up
@@ -175,14 +191,6 @@ public class Board {
 			// Continue in the direction until a non-enemy disc is found
 			while (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
 				flipPiece(r + modR, c + modC, game.getMyColor());
-				if (game.getMyColor() == 1) {
-					whitePieces++;
-					blackPieces--;
-				}
-				if (game.getMyColor() == 2) {
-					whitePieces--;
-					blackPieces++;
-				}
 				if (modR < 0) // go left if checking left
 					modR--;
 				else if (modR > 0) // go right if checking right
@@ -203,13 +211,21 @@ public class Board {
 	 */
 	public void flipPiece(int r, int c, int myColor) {
 		myDiscs[r][c].changeColor(myColor);
+		if (game.getMyColor() == 1) {
+			whitePieces++;
+			blackPieces--;
+		}
+		if (game.getMyColor() == 2) {
+			whitePieces--;
+			blackPieces++;
+		}
 	}
 
 	/**
-	 * Formats and prints one row of the Othello Board
+	 * Prints one row of the Othello Board
 	 * 
 	 * @param r
-	 * @author Kevin Gerstner
+	 * @author sirkevinicus
 	 * @since 9/1/2017
 	 */
 	public void printRow(int r) {
@@ -239,7 +255,8 @@ public class Board {
 	/**
 	 * Prints out horizontal line dividers
 	 * 
-	 * @author Kevin Gerstner
+	 * @author sirkevinicus
+	 * @since 10/13/17
 	 */
 	public void printLineDivider() {
 		System.out.print("\n  ");
@@ -250,9 +267,11 @@ public class Board {
 	}
 
 	/**
-	 * Prints a vertical bar inbetween columns
+	 * Prints a vertical bar in between columns
 	 * 
 	 * @param boardWidth
+	 * @author sirkevinicus
+	 * @since 10/13/17
 	 */
 	public void printBar(int boardWidth) {
 		System.out.print('|');
@@ -260,6 +279,9 @@ public class Board {
 
 	/**
 	 * Prints out the numbers at the top of the board
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
 	 */
 	public void printNums() {
 		System.out.print("  ");
@@ -268,6 +290,15 @@ public class Board {
 		}
 	}
 
+	/**
+	 * Returns a row and col modifier for each direction Ex: returns -1, 0 for "up"
+	 * because it is a row up
+	 * 
+	 * @param d
+	 * @return row and col modifiers
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
 	public int[] getModifiers(String d) {
 		int[] mods = { 0, 0 };
 		switch (d) {
@@ -305,4 +336,45 @@ public class Board {
 		return mods;
 	}
 
+	/**
+	 * Returns num of black pieces on the board
+	 * 
+	 * @return blackPieces
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public int getBlackPieces() {
+		return blackPieces;
+	}
+
+	/**
+	 * Sets black pieces to b
+	 * @param b
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void setBlackPieces(int b) {
+		blackPieces = b;
+	}
+	
+	/**
+	 * Returns num of white pieces on the board
+	 * 
+	 * @return whitePieces
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public int getWhitePieces() {
+		return whitePieces;
+	}
+
+	/**
+	 * Sets white pieces to w
+	 * @param w
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void setWhitePieces(int w) {
+		whitePieces = w;
+	}
 }

@@ -2,19 +2,20 @@ package othello;
 
 public class Disc {
 
-	public Boolean isActive;		//Is there a Disc here?
-	public Integer discColor = 0;	//Colors: 0=null, 1=white, 2=black
-	public int rCoor;	//Row coord of this disc
-	public int cCoor;	//Col coord of this disc
+	public Boolean isActive; // Is there a Disc here?
+	public Integer discColor = 0; // Colors: 0=null, 1=white, 2=black
+	public int rCoor; // Row coord of this disc
+	public int cCoor; // Col coord of this disc
 
 	/**
 	 * CONSTRUCTOR
+	 * 
 	 * @param r
 	 * @param c
 	 * @param dt
 	 */
 	public Disc(int r, int c, String dt) {
-		//dt: color of this disc, as a string
+		// dt: color of this disc, as a string
 		rCoor = r;
 		cCoor = c;
 		isActive = true;
@@ -32,6 +33,7 @@ public class Disc {
 
 	/**
 	 * CONSTRUCTOR
+	 * 
 	 * @param r
 	 * @param c
 	 */
@@ -43,8 +45,11 @@ public class Disc {
 	}
 
 	/**
-	 * Either adds a disc if there isn't one or changes the color of the disc to the opposite.
-	 * @param int color
+	 * Adds a Disc if there isn't one or changes the color of the Disc to the
+	 * opposite color.
+	 * 
+	 * @param int
+	 *            color
 	 * @author Kevin Gerstner
 	 * @since 9/1/2017
 	 */
@@ -62,9 +67,10 @@ public class Disc {
 				this.discColor = 1;
 		}
 	}
-	
+
 	/**
 	 * Returns the disc color
+	 * 
 	 * @return discColor
 	 * @author Kevin Gerstner
 	 * @since 9/1/2017
@@ -72,9 +78,10 @@ public class Disc {
 	public int getDiscColor() {
 		return discColor;
 	}
-	
+
 	/**
 	 * Returns the Row Coordinate of this disc
+	 * 
 	 * @return rCoor
 	 * @author sirkevinicus
 	 * @since 9/1/2017
@@ -82,12 +89,12 @@ public class Disc {
 	public int getRCoor() {
 		return rCoor;
 	}
-	
+
 	/**
 	 * Returns the Col Coordinate of this disc
+	 * 
 	 * @return cCoor
-	 * @author sirkevinicus
-	 * since 9/1/2017
+	 * @author sirkevinicus since 9/1/2017
 	 */
 	public int getCCoor() {
 		return cCoor;
