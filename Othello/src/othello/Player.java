@@ -7,18 +7,12 @@ import java.util.regex.Pattern;
 public class Player {
 
 	// REFERENCES
-	OthelloOutput con = new OthelloOutput();
+	OthelloOutput text = new OthelloOutput();
 	String color;
-	Game game;
 	Scanner sc = new Scanner(System.in);
 
 	// VARS
-	ArrayList<int[]> vms = new ArrayList<int[]>(); // List of valid moves
-
-	// CONSTRUCTOR
-	public Player(Game g) {
-		game = g;
-	}
+	ArrayList<int[]> moves = new ArrayList<int[]>(); // List of valid moves
 
 	/**
 	 * Adds a new valid move for the current player
@@ -29,19 +23,15 @@ public class Player {
 	 */
 	public void addValidMove(int r, int c) {
 		int[] vc = new int[2]; // Creates a new int[] valid coordinate, storing row and col
-
 		// If the coordinate is already valid, doesn't add it again
-		for (int[] a : vms) {
+		for (int[] a : moves) {
 			if (a[0] == r && a[1] == c) {
 				return;
 			}
 		}
-		// Adds the row and col to the valid coordinate
 		vc[0] = r;
 		vc[1] = c;
-
-		// Adds the validCoordinate to the list
-		vms.add(vc);
+		moves.add(vc);
 	}
 
 	/**
@@ -51,7 +41,7 @@ public class Player {
 	 * @since 10/13/17
 	 */
 	public void resetValidMoves() {
-		vms.clear();
+		moves.clear();
 	}
 
 	/**
@@ -61,7 +51,7 @@ public class Player {
 	 * @return Boolean
 	 */
 	public Boolean hasValidMove() {
-		if (vms.size() != 0)
+		if (moves.size() != 0)
 			return true;
 		else
 			return false;
@@ -78,7 +68,7 @@ public class Player {
 	 */
 	public Boolean isValidMove(int r, int c) {
 		// Checks to see if the given [r,c] is in the validCoordinates list
-		for (int[] a : vms) {
+		for (int[] a : moves) {
 			if (a[0] == r && a[1] == c) {
 				return true;
 			}
@@ -94,7 +84,7 @@ public class Player {
 	 */
 	public void printValidMoves() {
 		System.out.println("Valid Moves: ");
-		for (int[] b : vms) {
+		for (int[] b : moves) {
 			System.out.print("(" + (b[0] + 1) + "," + (b[1] + 1) + ")\n");
 		}
 	}
@@ -111,19 +101,28 @@ public class Player {
 
 		// If the input is a special character
 		if (coords.equals("pass")) {
-			game.pass();
+			// return for pass function
 		} else if (coords.equals("score")) {
-			game.printScore();
+			// return for score function
 		} else if (coords.equals("help")) {
-			printValidMoves();
+			// return for help function
 		} else if (coords.equals("quit")) {
-			game.quit();
+			// return for quit function
 		} else {
 			// Makes sure input length is 3, fits pattern [1-8],[1-8], and the move is valid
 			while ((coords.length() != 3) || !fitsCoordsPattern(coords)
 					|| !isValidMove(getRCoor(coords), getCCoor(coords))) {
 				System.out.println("Please enter a valid coordinate.");
 				coords = sc.next();
+				if (coords.equals("pass")) {
+					break;
+				} else if (coords.equals("score")) {
+					break;
+				} else if (coords.equals("help")) {
+					break;
+				} else if (coords.equals("quit")) {
+					break;
+				}
 			}
 		}
 		return coords;
@@ -134,6 +133,8 @@ public class Player {
 	 * 
 	 * @param s
 	 * @return true or false
+	 * @author sirkevinicus
+	 * @since 10/15/17
 	 */
 	public Boolean fitsCoordsPattern(String s) {
 		String coords = s;
@@ -147,8 +148,10 @@ public class Player {
 	/**
 	 * Returns the Row Coordinate from the input string
 	 * 
-	 * @param strin
+	 * @param string
 	 * @return row coordinate
+	 * @author sirkevinicus
+	 * @since 10/15/17
 	 */
 	public int getRCoor(String s) {
 		return Integer.parseInt(s.substring(0, 1)) - 1;
@@ -159,6 +162,8 @@ public class Player {
 	 * 
 	 * @param string
 	 * @return col coordinate
+	 * @author sirkevinicus
+	 * @since 10/15/17
 	 */
 	public int getCCoor(String s) {
 		return Integer.parseInt(s.substring(2)) - 1;
@@ -167,11 +172,12 @@ public class Player {
 	/**
 	 * Return a random move out of the valid moves
 	 * 
-	 * @author sirkevinicus
 	 * @return random move
+	 * @author sirkevinicus
+	 * @since 10/15/17
 	 */
 	public String getRandomMove() {
-		int[] randomCoord = vms.get((int) (Math.random() * vms.size()));
+		int[] randomCoord = moves.get((int) (Math.random() * moves.size()));
 		return (randomCoord[0] + 1) + "," + (randomCoord[1] + 1);
 	}
 }

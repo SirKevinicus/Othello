@@ -28,6 +28,7 @@ public class Board {
 	 * @since 9/1/2017
 	 */
 	public void initBoard() {
+		
 		int leftMid = (int) (bWidth / 2) - 1; // Finds the left middle
 		int rightMid = leftMid + 1; // Finds the right middle
 
@@ -92,7 +93,7 @@ public class Board {
 		for (int r = 0; r < myDiscs[0].length; r++) {
 			for (int c = 0; c < myDiscs[1].length; c++) {
 				// If the disc is not active
-				if (!myDiscs[r][c].isActive) {
+				if (!myDiscs[r][c].isActive()) {
 					isDirectionValid(r, c, "up");
 					isDirectionValid(r, c, "down");
 					isDirectionValid(r, c, "left");
@@ -106,6 +107,50 @@ public class Board {
 		}
 	}
 
+	/**
+	 * Checks to see if a direction is valid
+	 * 
+	 * @param r
+	 * @param c
+	 * @param d
+	 * @return true or false
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public Boolean isDirectionValid(int r, int c, String d) {
+		int[] mods = getModifiers(d);
+		int modR = mods[0]; // The Row Modifier, such as -1 for up
+		int modC = mods[1]; // The col modifier, such as 1 for right
+
+		try {
+			// If the immediate disc is an enemy, perform the check
+			if (myDiscs[r + modR][c + modC].getDiscColor() == game.getEnemyColor()) {
+				// Continue in the direction until a non-enemy disc is found
+				while (myDiscs[r + modR][c + modC].getDiscColor() == game.getEnemyColor()) {
+					if (modR < 0) // go left if checking left
+						modR--;
+					else if (modR > 0) // go right if checking right
+						modR++;
+					if (modC < 0) // go up if checking up
+						modC--;
+					else if (modC > 0) // go down if checking down
+						modC++;
+				}
+				// If the non-enemy disc exists, that means the move is valid
+				if (myDiscs[r + modR][c + modC].isActive()) {
+					p1.addValidMove(r, c);
+					return true;
+				}
+				// If not, move is invalid
+				else
+					return false;
+			} else
+				return false;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return false;
+		}
+	}
+	
 	/**
 	 * Flips all pieces that are sandwiched
 	 * 
@@ -134,50 +179,6 @@ public class Board {
 	}
 
 	/**
-	 * Checks to see if a direction is valid
-	 * 
-	 * @param r
-	 * @param c
-	 * @param d
-	 * @return true or false
-	 * @author sirkevinicus
-	 * @since 10/13/17
-	 */
-	public Boolean isDirectionValid(int r, int c, String d) {
-		int[] mods = getModifiers(d);
-		int modR = mods[0]; // The Row Modifier, such as -1 for up
-		int modC = mods[1]; // The col modifier, such as 1 for right
-
-		try {
-			// If the immediate disc is an enemy, perform the check
-			if (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
-				// Continue in the direction until a non-enemy disc is found
-				while (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
-					if (modR < 0) // go left if checking left
-						modR--;
-					else if (modR > 0) // go right if checking right
-						modR++;
-					if (modC < 0) // go up if checking up
-						modC--;
-					else if (modC > 0) // go down if checking down
-						modC++;
-				}
-				// If the non-enemy disc exists, that means the move is valid
-				if (myDiscs[r + modR][c + modC].isActive) {
-					p1.addValidMove(r, c);
-					return true;
-				}
-				// If not, move is invalid
-				else
-					return false;
-			} else
-				return false;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return false;
-		}
-	}
-
-	/**
 	 * Flips all pieces in a direction
 	 * 
 	 * @param r
@@ -192,7 +193,7 @@ public class Board {
 		int modC = mods[1]; // The col modifier, such as 1 for right
 
 		// Continue in the direction until a non-enemy disc is found
-		while (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
+		while (myDiscs[r + modR][c + modC].getDiscColor() == game.getEnemyColor()) {
 			myDiscs[r + modR][c + modC].changeColor(game.getMyColor());
 			// Update Disc Numbers
 			if (game.getMyColor() == 1) {
@@ -227,15 +228,15 @@ public class Board {
 		text.printBar();
 		for (int col = 0; col < bWidth; col++) {
 			// If there's a disc
-			if (myDiscs[r][col].isActive) {
+			if (myDiscs[r][col].isActive()) {
 				// If the disc is white
-				if (myDiscs[r][col].discColor == 1) {
+				if (myDiscs[r][col].getDiscColor() == 1) {
 					System.out.print("  O"); // Print 'O'
 					System.out.print("  ");
 				}
 
 				// If the disc is black
-				if (myDiscs[r][col].discColor == 2) {
+				if (myDiscs[r][col].getDiscColor() == 2) {
 					System.out.print("  X"); // Print 'X'
 					System.out.print("  ");
 				}
@@ -344,6 +345,17 @@ public class Board {
 	public int getWhitePieces() {
 		return whitePieces;
 	}
+	
+	/**
+	 * Sets white pieces to w
+	 * 
+	 * @param w
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void setWhitePieces(int w) {
+		whitePieces = w;
+	}
 
 	/**
 	 * Adds a white disc to the total
@@ -363,16 +375,5 @@ public class Board {
 	 */
 	public void subWhitePiece() {
 		whitePieces--;
-	}
-
-	/**
-	 * Sets white pieces to w
-	 * 
-	 * @param w
-	 * @author sirkevinicus
-	 * @since 10/13/17
-	 */
-	public void setWhitePieces(int w) {
-		whitePieces = w;
 	}
 }

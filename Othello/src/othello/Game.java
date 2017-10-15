@@ -6,14 +6,14 @@ import java.util.Scanner;
 
 public class Game {
 	// REFERENCES
-	OthelloOutput con = new OthelloOutput();
+	OthelloOutput text = new OthelloOutput();
+	Player player = new Player();
+	Board board = new Board(this, player);
 
 	// VARIABLES
 	private Boolean blackTurn = true;
 	private Boolean isFirstGame = true;
 	Scanner scan = new Scanner(System.in);
-	Player player = new Player(this);
-	Board board = new Board(this, player);
 	private Boolean p1MovesLeft = true;
 	private Boolean p2MovesLeft = true;
 
@@ -26,14 +26,12 @@ public class Game {
 	 */
 	public void run(String gametype) {
 		// Print the game and start taking turns until the game is over
-		con.printDiv();
-		board.setBlackPieces(2);
-		board.setWhitePieces(2);
+		text.printDiv();
 		blackTurn = true;
 
 		// Print the instructions if this is the first game
 		if (isFirstGame) {
-			con.printInstructions();
+			text.printInstructions();
 			pressEnterToContinue();
 		}
 		switch (gametype) {
@@ -70,6 +68,7 @@ public class Game {
 				p1MovesLeft = true;
 				p2MovesLeft = true;
 				printWhosTurn();
+				// If it's the player's turn, ask for coords. If it's CPU's turn, random coords
 				if (blackTurn) {
 					coords = player.getUserCoords();
 				} else {
@@ -81,19 +80,32 @@ public class Game {
 					int rCoor = player.getRCoor(coords);
 					int cCoor = player.getCCoor(coords);
 
-					// Flips all discs
+					board.addDisc(rCoor, cCoor, getMyColor());
 					board.flipPieces(rCoor, cCoor);
 
-					// Adds the new piece and updates the board
-					board.addDisc(rCoor, cCoor, getMyColor());
 					board.printBoard();
 					changeTurn();
 				}
-			} else {
+				if (coords.equals("pass")) {
+					pass();
+				} else if (coords.equals("score")) {
+					printScore();
+				} else if (coords.equals("help")) {
+					player.printValidMoves();
+				} else if (coords.equals("quit")) {
+					return;
+				}
+			}
+			// If the player doesn't have any valid moves
+			else {
+				// If this is the first time, set p1 moves to false and pass
 				if (p1MovesLeft && p2MovesLeft) {
 					p1MovesLeft = false;
 					pass();
-				} else if (!p1MovesLeft && p2MovesLeft)
+				}
+				// If the other player also doesn't have moves, set p2 moves to false
+				// And the game will end
+				else if (!p1MovesLeft && p2MovesLeft)
 					p2MovesLeft = false;
 			}
 		}
@@ -120,7 +132,6 @@ public class Game {
 				p2MovesLeft = true;
 				printWhosTurn();
 				coords = player.getUserCoords();
-
 				// If not a special command
 				if (player.fitsCoordsPattern(coords)) {
 					// Extracts Coordinates from the coords string
@@ -131,15 +142,27 @@ public class Game {
 					board.addDisc(rCoor, cCoor, getMyColor());
 					board.flipPieces(rCoor, cCoor);
 
-					// Adds the new piece and updates the board
+					// Updates the board, changes turns
 					board.printBoard();
 					changeTurn();
 				}
+				if (coords.equals("pass")) {
+					pass();
+				} else if (coords.equals("score")) {
+					printScore();
+				} else if (coords.equals("help")) {
+					player.printValidMoves();
+				} else if (coords.equals("quit")) {
+					return;
+				}
 			} else {
+				// If this is the first time, p1 has no moves left, and passes
 				if (p1MovesLeft && p2MovesLeft) {
 					p1MovesLeft = false;
 					pass();
-				} else if (!p1MovesLeft && p2MovesLeft)
+				}
+				// If the second player also has no moves left, ends the game
+				else if (!p1MovesLeft && p2MovesLeft)
 					p2MovesLeft = false;
 			}
 		}
@@ -153,14 +176,19 @@ public class Game {
 	 * @since 10/13/17
 	 */
 	public void runSim() {
-		//Determine the number of times to run the simulation
+		// Determine the number of times to run the simulation
 		System.out.println("How many times would you like to run the simulation?");
-		int numTimes = scan.nextInt();
+		int numTimes = 1;
+		while (!scan.hasNextInt()) {
+			System.out.println("Please input a valid number");
+			scan.next();
+		}
+		numTimes = scan.nextInt();
 		int[] spreadArray = new int[numTimes];
-		
-		//Run the simulation numTimes times
+
+		// Run the simulation numTimes times
 		for (int i = 0; i < numTimes; i++) {
-			System.out.println("Running test #" + (i+1) + ".");
+			System.out.println("Running test #" + (i + 1) + ".");
 			board.initBoard();
 			p1MovesLeft = true;
 			p2MovesLeft = true;
@@ -244,7 +272,7 @@ public class Game {
 	 * @since 10/13/17
 	 */
 	public String askForGametype() {
-		con.printGamemodeSelection();
+		text.printGamemodeSelection();
 		String input = scan.next();
 		while (!input.equals("1P") && !input.equals("2P") && !input.equals("SIM")) {
 			System.out.println("Please input a valid gamemode.");
@@ -257,6 +285,8 @@ public class Game {
 	 * Returns the inactive player's color
 	 * 
 	 * @return 1(white) or 2(black)
+	 * @author sirkevinicus
+	 * @since 10/15/17
 	 */
 	public int getEnemyColor() {
 		if (blackTurn)
@@ -269,6 +299,8 @@ public class Game {
 	 * Returns the active player's color
 	 * 
 	 * @return 1(white) or 2(black)
+	 * @author sirkevinicus
+	 * @since 10/15/17
 	 */
 	public int getMyColor() {
 		if (blackTurn)
@@ -279,6 +311,9 @@ public class Game {
 
 	/**
 	 * Advances the game to the next player's turn
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/15/17
 	 */
 	public void changeTurn() {
 		if (blackTurn) {
@@ -290,6 +325,9 @@ public class Game {
 
 	/**
 	 * Prints who's turn it is
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/15/17
 	 */
 	public void printWhosTurn() {// Print Statement
 		if (getMyColor() == 1) {
@@ -310,13 +348,13 @@ public class Game {
 		int bp = board.getBlackPieces();
 		// Check if anyone won the game
 		if (wp > bp) {
-			con.printWhiteWins();
+			text.printWhiteWins();
 			System.out.printf("\nScore: \n White: %3d \n Black: %3d", wp, bp);
 		} else if (wp < bp) {
-			con.printBlackWins();
+			text.printBlackWins();
 			System.out.printf("\nScore: \n Black: %3d \n White: %3d", bp, wp);
 		} else {
-			con.printTie();
+			text.printTie();
 			System.out.printf("\nScore: \n Black: %3d \n White: %3d", bp, wp);
 		}
 	}
@@ -347,35 +385,32 @@ public class Game {
 	 * @since 10/13/17
 	 */
 	public void quit() {
-		if (playAgain()) {
-			run(askForGametype());
-		} else {
-			System.err.print("Exiting game.");
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			System.err.print(".");
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			System.err.print(".\n");
-			con.printGoodbye();
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			for(int i = 0; i < 100; i++) {
-				System.out.println("\b");
-			}
-			System.out.flush();
-		
-			System.exit(0);
+		System.err.print("Exiting game.");
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+		System.err.print(".");
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.err.print(".\n");
+		text.printGoodbye();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		for (int i = 0; i < 100; i++) {
+			System.out.println("\b");
+		}
+		System.out.flush();
+
+		System.exit(0);
+
 	}
 
 	/**
@@ -395,8 +430,9 @@ public class Game {
 		if (pa.equals("y")) {
 			isFirstGame = false;
 			return true;
-		} else
+		} else {
 			return false;
+		}
 	}
 
 	/**

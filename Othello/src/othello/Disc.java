@@ -2,13 +2,13 @@ package othello;
 
 public class Disc {
 
-	public Boolean isActive; // Is there a Disc here?
-	public Integer discColor = 0; // Colors: 0=null, 1=white, 2=black
-	public int rCoor; // Row coord of this disc
-	public int cCoor; // Col coord of this disc
+	private Boolean isActive; // Is there a Disc here?
+	private Integer discColor = 0; // Colors: 0=null, 1=white, 2=black
+	private int rCoor; // Row coord of this disc
+	private int cCoor; // Col coord of this disc
 
 	/**
-	 * CONSTRUCTOR
+	 * Add a new disc with a color
 	 * 
 	 * @param r
 	 * @param c
@@ -32,7 +32,7 @@ public class Disc {
 	}
 
 	/**
-	 * CONSTRUCTOR
+	 * Add a empty disc
 	 * 
 	 * @param r
 	 * @param c
@@ -77,6 +77,17 @@ public class Disc {
 	 */
 	public int getDiscColor() {
 		return discColor;
+	}
+	
+	/**
+	 * Returns if this disc is active
+	 * 
+	 * @return isActive
+	 * @author sirkevinicus
+	 * @since 10/15/17
+	 */
+	public Boolean isActive() {
+		return isActive;
 	}
 
 	/**
