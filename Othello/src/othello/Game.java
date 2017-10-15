@@ -153,12 +153,17 @@ public class Game {
 	 * @since 10/13/17
 	 */
 	public void runSim() {
+		//Determine the number of times to run the simulation
 		System.out.println("How many times would you like to run the simulation?");
 		int numTimes = scan.nextInt();
 		int[] spreadArray = new int[numTimes];
-		for (int i = 1; i < numTimes; i++) {
-			System.out.println("Running test #" + (i + 1) + ".");
+		
+		//Run the simulation numTimes times
+		for (int i = 0; i < numTimes; i++) {
+			System.out.println("Running test #" + (i+1) + ".");
 			board.initBoard();
+			p1MovesLeft = true;
+			p2MovesLeft = true;
 			board.generateValidMoves();
 			String coords;
 

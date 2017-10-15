@@ -40,6 +40,9 @@ public class Board {
 		myDiscs[leftMid][rightMid] = new Disc(leftMid, rightMid, "black"); // Top Right Black
 		myDiscs[rightMid][leftMid] = new Disc(rightMid, leftMid, "black"); // Bot Left Black
 		myDiscs[rightMid][rightMid] = new Disc(rightMid, rightMid, "white"); // Bot Right White
+		
+		setBlackPieces(2);
+		setWhitePieces(2);
 	}
 
 	/**
@@ -190,7 +193,15 @@ public class Board {
 		if (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
 			// Continue in the direction until a non-enemy disc is found
 			while (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
-				flipPiece(r + modR, c + modC, game.getMyColor());
+				myDiscs[r][c].changeColor(game.getMyColor());
+				if (game.getMyColor() == 1) {
+					addWhitePiece();
+					subBlackPiece();
+				}
+				if (game.getMyColor() == 2) {
+					subWhitePiece();
+					addBlackPiece();
+				}
 				if (modR < 0) // go left if checking left
 					modR--;
 				else if (modR > 0) // go right if checking right
@@ -200,24 +211,6 @@ public class Board {
 				else if (modC > 0) // go down if checking down
 					modC++;
 			}
-		}
-	}
-
-	/**
-	 * Flips the Disc at [r][c] to the opposite color
-	 * 
-	 * @param r
-	 * @param c
-	 */
-	public void flipPiece(int r, int c, int myColor) {
-		myDiscs[r][c].changeColor(myColor);
-		if (game.getMyColor() == 1) {
-			whitePieces++;
-			blackPieces--;
-		}
-		if (game.getMyColor() == 2) {
-			whitePieces--;
-			blackPieces++;
 		}
 	}
 
@@ -357,6 +350,14 @@ public class Board {
 		blackPieces = b;
 	}
 	
+	public void addBlackPiece() {
+		blackPieces++;
+	}
+	
+	public void subBlackPiece() {
+		blackPieces--;
+	}
+	
 	/**
 	 * Returns num of white pieces on the board
 	 * 
@@ -366,6 +367,14 @@ public class Board {
 	 */
 	public int getWhitePieces() {
 		return whitePieces;
+	}
+	
+	public void addWhitePiece() {
+		whitePieces++;
+	}
+	
+	public void subWhitePiece() {
+		whitePieces--;
 	}
 
 	/**

@@ -1,8 +1,8 @@
 package othello;
 
 public class OthelloConstants {
-	public static final int ARRAY_W = 4;
-	public static final int ARRAY_H = 4;
+	public static final int ARRAY_W = 8;
+	public static final int ARRAY_H = 8;
 
 	final static String asciiName = "_________________________________________________________________\n"
 			+ " _______ _________          _______  _        _        _______ \n"
