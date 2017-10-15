@@ -3,16 +3,17 @@ package othello;
 public class Board {
 	// REFERENCES
 	Disc[][] myDiscs;
-	OthelloConstants con = new OthelloConstants();
+	OthelloOutput text = new OthelloOutput();
 	Game game;
 	Player p1;
 
 	// VARIABLES
-	private int bWidth = OthelloConstants.ARRAY_W;
-	private int bHeight = OthelloConstants.ARRAY_H;
+	private int bWidth = OthelloOutput.ARRAY_W;
+	private int bHeight = OthelloOutput.ARRAY_H;
 	private int whitePieces = 2;
 	private int blackPieces = 2;
 
+	// CONSTRUCTOR
 	public Board(Game g, Player one) {
 		p1 = one;
 		game = g;
@@ -27,20 +28,21 @@ public class Board {
 	 * @since 9/1/2017
 	 */
 	public void initBoard() {
-		int leftMid = (int) (bWidth / 2) - 1; // 3
-		int rightMid = leftMid + 1; // 4
+		int leftMid = (int) (bWidth / 2) - 1; // Finds the left middle
+		int rightMid = leftMid + 1; // Finds the right middle
 
-		for (int row = 0; row < bWidth; row++) { // Initialize all discs
+		// Initialize all discs
+		for (int row = 0; row < bWidth; row++) {
 			for (int col = 0; col < bHeight; col++) {
 				myDiscs[row][col] = new Disc(row, col);
 			}
 		}
+
 		// Place the starting discs
 		myDiscs[leftMid][leftMid] = new Disc(leftMid, leftMid, "white"); // Top Left White
 		myDiscs[leftMid][rightMid] = new Disc(leftMid, rightMid, "black"); // Top Right Black
 		myDiscs[rightMid][leftMid] = new Disc(rightMid, leftMid, "black"); // Bot Left Black
 		myDiscs[rightMid][rightMid] = new Disc(rightMid, rightMid, "white"); // Bot Right White
-		
 		setBlackPieces(2);
 		setWhitePieces(2);
 	}
@@ -52,15 +54,15 @@ public class Board {
 	 * @since 9/1/2017
 	 */
 	public void printBoard() {
-		con.printDiv();
-		printNums();
-		printLineDivider();
+		text.printDiv();
+		text.printNums();
+		text.printLineDivider();
 		// PRINT ALL THE ROWS
 		for (int row = 0; row < bWidth; row++) {
 			printRow(row);
-			printLineDivider();
+			text.printLineDivider();
 		}
-		con.printDiv();
+		text.printDiv();
 	}
 
 	/**
@@ -189,29 +191,28 @@ public class Board {
 		int modR = mods[0]; // The Row Modifier, such as -1 for up
 		int modC = mods[1]; // The col modifier, such as 1 for right
 
-		// If the immediate disc is an enemy, perform the check
-		if (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
-			// Continue in the direction until a non-enemy disc is found
-			while (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
-				myDiscs[r][c].changeColor(game.getMyColor());
-				if (game.getMyColor() == 1) {
-					addWhitePiece();
-					subBlackPiece();
-				}
-				if (game.getMyColor() == 2) {
-					subWhitePiece();
-					addBlackPiece();
-				}
-				if (modR < 0) // go left if checking left
-					modR--;
-				else if (modR > 0) // go right if checking right
-					modR++;
-				if (modC < 0) // go up if checking up
-					modC--;
-				else if (modC > 0) // go down if checking down
-					modC++;
+		// Continue in the direction until a non-enemy disc is found
+		while (myDiscs[r + modR][c + modC].discColor == game.getEnemyColor()) {
+			myDiscs[r + modR][c + modC].changeColor(game.getMyColor());
+			// Update Disc Numbers
+			if (game.getMyColor() == 1) {
+				addWhitePiece();
+				subBlackPiece();
 			}
+			if (game.getMyColor() == 2) {
+				subWhitePiece();
+				addBlackPiece();
+			}
+			if (modR < 0) // go left if checking left
+				modR--;
+			else if (modR > 0) // go right if checking right
+				modR++;
+			if (modC < 0) // go up if checking up
+				modC--;
+			else if (modC > 0) // go down if checking down
+				modC++;
 		}
+
 	}
 
 	/**
@@ -222,8 +223,8 @@ public class Board {
 	 * @since 9/1/2017
 	 */
 	public void printRow(int r) {
-		System.out.print(r + 1);
-		printBar(bWidth); // Print a Bar to start
+		System.out.print(r + 1); // Prints the row's number
+		text.printBar();
 		for (int col = 0; col < bWidth; col++) {
 			// If there's a disc
 			if (myDiscs[r][col].isActive) {
@@ -241,45 +242,7 @@ public class Board {
 			} else { // If there's no disc
 				System.out.print("     "); // Print a blank space
 			}
-			printBar(bWidth);
-		}
-	}
-
-	/**
-	 * Prints out horizontal line dividers
-	 * 
-	 * @author sirkevinicus
-	 * @since 10/13/17
-	 */
-	public void printLineDivider() {
-		System.out.print("\n  ");
-		for (int i = 0; i < bWidth; i++) {
-			System.out.print("------");
-		}
-		System.out.print("\n");
-	}
-
-	/**
-	 * Prints a vertical bar in between columns
-	 * 
-	 * @param boardWidth
-	 * @author sirkevinicus
-	 * @since 10/13/17
-	 */
-	public void printBar(int boardWidth) {
-		System.out.print('|');
-	}
-
-	/**
-	 * Prints out the numbers at the top of the board
-	 * 
-	 * @author sirkevinicus
-	 * @since 10/13/17
-	 */
-	public void printNums() {
-		System.out.print("  ");
-		for (int i = 0; i < bWidth; i++) {
-			System.out.printf("  %d   ", i + 1);
+			text.printBar();
 		}
 	}
 
@@ -342,6 +305,7 @@ public class Board {
 
 	/**
 	 * Sets black pieces to b
+	 * 
 	 * @param b
 	 * @author sirkevinicus
 	 * @since 10/13/17
@@ -349,15 +313,27 @@ public class Board {
 	public void setBlackPieces(int b) {
 		blackPieces = b;
 	}
-	
+
+	/**
+	 * Adds a black disc to the total
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/14/17
+	 */
 	public void addBlackPiece() {
 		blackPieces++;
 	}
-	
+
+	/**
+	 * Subtracts a black piece from the total
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/14/17
+	 */
 	public void subBlackPiece() {
 		blackPieces--;
 	}
-	
+
 	/**
 	 * Returns num of white pieces on the board
 	 * 
@@ -368,17 +344,30 @@ public class Board {
 	public int getWhitePieces() {
 		return whitePieces;
 	}
-	
+
+	/**
+	 * Adds a white disc to the total
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/14/17
+	 */
 	public void addWhitePiece() {
 		whitePieces++;
 	}
-	
+
+	/**
+	 * Subtracts a white piece from the total
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/14/17
+	 */
 	public void subWhitePiece() {
 		whitePieces--;
 	}
 
 	/**
 	 * Sets white pieces to w
+	 * 
 	 * @param w
 	 * @author sirkevinicus
 	 * @since 10/13/17

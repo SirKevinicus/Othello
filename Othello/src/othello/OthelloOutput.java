@@ -1,6 +1,6 @@
 package othello;
 
-public class OthelloConstants {
+public class OthelloOutput {
 	public static final int ARRAY_W = 8;
 	public static final int ARRAY_H = 8;
 
@@ -135,5 +135,43 @@ public class OthelloConstants {
 	 */
 	public void printGoodbye() {
 		System.out.println(goodbye);
+	}
+	
+	/**
+	 * Prints a vertical bar in between columns
+	 * 
+	 * @param boardWidth
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void printBar() {
+		System.out.print('|');
+	}
+	
+	/**
+	 * Prints out horizontal line dividers
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void printLineDivider() {
+		System.out.print("\n  ");
+		for (int i = 0; i < ARRAY_H; i++) {
+			System.out.print("------");
+		}
+		System.out.print("\n");
+	}
+	
+	/**
+	 * Prints out the numbers at the top of the board
+	 * 
+	 * @author sirkevinicus
+	 * @since 10/13/17
+	 */
+	public void printNums() {
+		System.out.print("  ");
+		for (int i = 0; i < ARRAY_W; i++) {
+			System.out.printf("  %d   ", i + 1);
+		}
 	}
 }

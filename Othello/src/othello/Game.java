@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Game {
 	// REFERENCES
-	OthelloConstants con = new OthelloConstants();
+	OthelloOutput con = new OthelloOutput();
 
 	// VARIABLES
 	private Boolean blackTurn = true;
@@ -128,10 +128,10 @@ public class Game {
 					int cCoor = player.getCCoor(coords);
 
 					// Flips all discs
+					board.addDisc(rCoor, cCoor, getMyColor());
 					board.flipPieces(rCoor, cCoor);
 
 					// Adds the new piece and updates the board
-					board.addDisc(rCoor, cCoor, getMyColor());
 					board.printBoard();
 					changeTurn();
 				}

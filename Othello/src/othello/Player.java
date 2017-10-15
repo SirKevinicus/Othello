@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class Player {
 
 	// REFERENCES
-	OthelloConstants con = new OthelloConstants();
+	OthelloOutput con = new OthelloOutput();
 	String color;
 	Game game;
 	Scanner sc = new Scanner(System.in);
